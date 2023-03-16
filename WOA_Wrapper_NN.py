@@ -12,6 +12,7 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 from WOA_Wrapper_FS import WOA as FS
+import pickle
 
 def read_data():
     dataset = pd.read_csv("/home/jerinpaul/Documents/Study Material/DISS1/Dataset/data.csv")
@@ -54,6 +55,7 @@ def model_creation(data, target):
     model.compile(optimizer='adam',loss='sparse_categorical_crossentropy',metrics=['accuracy'])
     #fit model on train dataset
     model.fit(X_train,y_train,epochs=1750)
+    tf.keras.models.save_model(model, 'finalized_model.pkl')
     predicted = model.predict(X_test)
     predicted = np.argmax(predicted, axis = 1)
     print(model.evaluate(X_test, y_test))
@@ -80,6 +82,8 @@ features = {0: "radius_mean", 1: "texture_mean", 2:	"perimeter_mean", 3: "area_m
 
 data, target = read_data()
 data, target = preprocess(data, target)
+print(data)
+print(target)
 
 solution = FS(num_agents=50, max_iter=500, train_data=data, train_label=target, save_conv_graph=True)
 
@@ -87,3 +91,4 @@ new_data, features_picked = select_features(data, solution.best_agent, features)
 model_creation(new_data, target)
 print(features_picked)
 ###############################################################################################
+#['radius_mean', 'compactness_mean', 'radius_se', 'texture_se', 'perimeter_se', 'concave_points_se', 'symmetry_se', 'perimeter_worst', 'smoothness_worst', 'concavity_worst']
